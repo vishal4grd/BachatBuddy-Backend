@@ -41,7 +41,7 @@ public class AddressService {
         // handle default address logic
         if (Boolean.TRUE.equals(dto.getIsDefault())) {
             clearExistingDefault(userId);
-            address.setIsDefault(true);
+            address.setDefault(true);   // ✅ FIXED
         }
 
         Address saved = addressRepository.save(address);
@@ -57,7 +57,7 @@ public class AddressService {
 
         if (Boolean.TRUE.equals(dto.getIsDefault())) {
             clearExistingDefault(existing.getUser().getId(), id);
-            existing.setIsDefault(true);
+            existing.setDefault(true);   // ✅ FIXED
         }
 
         Address saved = addressRepository.save(existing);
@@ -75,7 +75,7 @@ public class AddressService {
     private void clearExistingDefault(Long userId) {
         addressRepository.findByUserIdAndIsDefaultTrue(userId)
                 .ifPresent(addr -> {
-                    addr.setIsDefault(false);
+                    addr.setDefault(false);   // ✅ FIXED
                     addressRepository.save(addr);
                 });
     }
@@ -83,9 +83,9 @@ public class AddressService {
     private void clearExistingDefault(Long userId, Long excludeId) {
         List<Address> addresses = addressRepository.findByUserIdAndIdNot(userId, excludeId);
         addresses.stream()
-                .filter(a -> Boolean.TRUE.equals(a.getIsDefault()))
+                .filter(a -> Boolean.TRUE.equals(a.getDefault()))
                 .forEach(addr -> {
-                    addr.setIsDefault(false);
+                    addr.setDefault(false);   // ✅ FIXED
                     addressRepository.save(addr);
                 });
     }
@@ -100,7 +100,7 @@ public class AddressService {
         dto.setCity(address.getCity());
         dto.setState(address.getState());
         dto.setPincode(address.getPincode());
-        dto.setIsDefault(address.getIsDefault());
+        dto.setIsDefault(address.getDefault());   // ✅ FIXED
         dto.setUserId(address.getUser().getId());
         return dto;
     }
@@ -113,8 +113,9 @@ public class AddressService {
         address.setCity(dto.getCity());
         address.setState(dto.getState());
         address.setPincode(dto.getPincode());
+
         if (dto.getIsDefault() != null) {
-            address.setIsDefault(dto.getIsDefault());
+            address.setDefault(dto.getIsDefault());   // ✅ FIXED
         }
     }
 }
