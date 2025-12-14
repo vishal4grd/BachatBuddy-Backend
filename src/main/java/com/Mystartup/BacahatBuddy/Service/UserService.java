@@ -3,6 +3,7 @@ package com.Mystartup.BacahatBuddy.Service;
 import com.Mystartup.BacahatBuddy.Model.User;
 import com.Mystartup.BacahatBuddy.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.List;
 public class UserService {
     @Autowired
     private final UserRepository repo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository repo) {
         this.repo = repo;
@@ -24,7 +28,13 @@ public class UserService {
         return repo.findById(id).orElse(null);
     }
 
+    public User getUserByUsername(String username) {
+        return repo.findByUsername(username);
+    }
+
     public User createUser(User user) {
+        // Encode password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
@@ -38,11 +48,6 @@ public class UserService {
         return null;
     }
 
-    public User authenticateUser(String username, String password) {
-        return repo.login(username.trim(), password.trim());
-    }
-
-
     public User deleteUser(Long id) {
         User user = repo.findById(id).orElse(null);
         if (user != null) {
@@ -51,4 +56,3 @@ public class UserService {
         return user;
     }
 }
-
